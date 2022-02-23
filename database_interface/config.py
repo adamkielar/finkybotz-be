@@ -27,14 +27,16 @@ SQLALCHEMY_CONNECTION_TIMEOUT = int(db_settings.SQLAlchemyConnectionTimeout)
 
 
 class DBPoolEngineSettings:
-
     @staticmethod
     def mssql_settings() -> Dict[str, Any]:
         return {
             "pool_size": SQLALCHEMY_CONNECTION_POOL_LIMIT,
             "max_overflow": SQLALCHEMY_CONNECTION_POOL_OVERFLOW,
             "pool_pre_ping": True,
-            "connect_args": {"connect_timeout": SQLALCHEMY_CONNECTION_TIMEOUT, "application_name": PROJECT_NAME},
+            "connect_args": {
+                "connect_timeout": SQLALCHEMY_CONNECTION_TIMEOUT,
+                "application_name": PROJECT_NAME,
+            },
         }
 
 
@@ -52,13 +54,16 @@ class DatabaseUrlSettings:
         )
 
     @staticmethod
-    def get_develop_db_connection_string() -> str:
+    def get_develop_db_connection_string() -> Optional[str]:
         return db_settings.Database_Dev_Url
 
-    def get_db_url(self) -> str:
+    def get_db_url(self) -> Optional[str]:
         if db_settings.Environment == "dev":
             return self.get_develop_db_connection_string()
-        return URL.create("mssql+pyodbc", query={"odbc_connect": self.get_production_db_connection_string()})
+        return URL.create(
+            "mssql+pyodbc",
+            query={"odbc_connect": self.get_production_db_connection_string()},
+        )
 
 
 db_url_settings = DatabaseUrlSettings()

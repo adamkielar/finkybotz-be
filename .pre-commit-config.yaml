@@ -1,0 +1,38 @@
+files: ^app/|^database_interface/
+default_stages: [commit]
+
+repos:
+  - repo: git@github.com:humitos/mirrors-autoflake.git
+    rev: v1.3
+    hooks:
+      - id: autoflake
+        args: [ '--in-place', '--remove-all-unused-imports' ]
+  - repo: https://github.com/asottile/reorder_python_imports
+    rev: v2.7.1
+    hooks:
+      - id: reorder-python-imports
+        language_version: python3
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: no-commit-to-branch
+        args: [ --branch, master, --branch, production ]
+  - repo: https://github.com/psf/black
+    rev: 20.8b1
+    hooks:
+      - id: black
+        args: [--line-length, '88']
+        language_version: python3
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.9.1
+    hooks:
+    -   id: flake8
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.931
+    hooks:
+      - id: mypy
