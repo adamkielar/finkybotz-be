@@ -1,0 +1,28 @@
+FROM python:3.10-slim-buster
+
+WORKDIR /src
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+RUN apt-get -y update --allow-releaseinfo-change && apt-get install curl gnupg -y && \
+    curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
+    curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
+    apt-get -y update --allow-releaseinfo-change && ACCEPT_EULA=Y apt-get install gcc libpq-dev build-essential msodbcsql17 mssql-tools unixodbc-dev -y
+RUN echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile && echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
+
+RUN apt-get install -y openssh-server && echo "root:Docker!" | chpasswd
+
+ARG REQUIREMENTS=production
+COPY ./app/requirements/${REQUIREMENTS}.txt /app/requirements/${REQUIREMENTS}.txt
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r /app/requirements/${REQUIREMENTS}.txt
+
+COPY ../app ./app
+COPY ../database_interface ./database_interface
+
+EXPOSE 8000 2222
+
+RUN chmod 755 ./app/entrypoint.sh
+
+CMD ["./app/entrypoint.sh"]
