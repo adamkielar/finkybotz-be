@@ -4,7 +4,8 @@ from typing import Generator
 import pytest
 from alembic import command
 from alembic.config import Config
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 from httpx import AsyncClient
 
