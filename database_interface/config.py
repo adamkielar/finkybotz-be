@@ -16,6 +16,7 @@ class DbSettings(BaseSettings):
     SQLAlchemyConnectionPoolOverflow: int
     SQLAlchemyConnectionTimeout: int
     Database_Dev_Url: Optional[str] = None
+    Test_DB_Name: str = "test_database"
 
 
 db_settings = DbSettings()

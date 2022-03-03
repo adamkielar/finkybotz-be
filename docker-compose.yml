@@ -8,6 +8,7 @@ x-env_file: &env_file
 services:
   backend:
     <<: *env_file
+    container_name: finkybotz_api
     command: uvicorn --host=0.0.0.0 --port 8000 app.main:app --reload
     build:
       context: .
@@ -19,29 +20,29 @@ services:
     depends_on:
       - mssql
     restart: always
-    container_name: finkybotz_api
     volumes:
       - ./app/:/src/app
       - ./database_interface/:/src/database_interface
-#      - ./database_interface/alembic.ini:/src/alembic.ini
+      - ./database_interface/alembic.ini:/src/alembic.ini
     tty: true
     stdin_open: true
 
-#  tests:
-#    container_name: zabka_cyberstore_sap_test
-#    command: pytest -v tests -s
-#    build:
-#      context: .
-#      dockerfile: docker/Dockerfile.tests
-#      network: host
+  tests:
+    <<: *env_file
+    container_name: finkybotz_tests
+    command: pytest -v tests -s
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.tests
+      network: host
 #    env_file:
 #      - .env.tests
-#    depends_on:
-#      - mssql
-#    profiles:
-#      - tests
-#    volumes:
-#      - .:/src
+    depends_on:
+      - mssql
+    profiles:
+      - tests
+    volumes:
+      - .:/src
 
   mssql:
     image: "mcr.microsoft.com/mssql/server:2019-latest"
