@@ -16,4 +16,6 @@ RUN pip install --no-cache-dir --upgrade -r /src/dev_app.txt
 
 COPY . /src
 
-CMD pytest tests -s
+RUN chmod 755 ./load_env.sh
+
+CMD pytest -v -s tests

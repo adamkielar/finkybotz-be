@@ -10,7 +10,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  TEST_IMAGE_NAME: ${REGISTRY}/${IMAGE_NAME}/finkybotz-tests
+  TEST_IMAGE_NAME: ghcr.io/adamkielar/finkybotz-be/finkybotz-tests::latest
 
 jobs:
   test:
@@ -19,8 +19,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2.4.0
-      - name: Log in to GitHub Packages
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-      - name: Pull image
+#      - name: Log in to GitHub Packages
+#        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${REGISTRY} -u ${{ github.actor }} --password-stdin
+#      - name: Pull image
+#        run: |
+#          docker pull ${{ env.TEST_IMAGE_NAME }} || true
+      - name: Build container
         run: |
-          docker pull $TEST_IMAGE_NAME || true
+          docker build \
+          -f docker/Dockerfile.tests \
+          -t finkybotz-tests \
+          "."
+      - name: Run Container
+        run: |
+          docker run \
+          -d \
+          --name finkybotz-tests \
+          --env-file=.env.test.docker \
+          finkybotz-tests
+      - name: Load env
+        run: docker exec finkybotz-tests ./load_env.sh .env.test.docker
+      - name: Pytest
+        run: docker exec finkybotz-tests python -m pytest -v -s

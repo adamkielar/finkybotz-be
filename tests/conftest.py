@@ -29,7 +29,7 @@ def get_alembic_config():
 
 def create_test_db() -> None:
     engine = create_engine(
-        db_url_settings.get_develop_db_connection_string(), future=True
+        db_url_settings.get_test_db_connection_string(), future=True
     )
 
     with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:

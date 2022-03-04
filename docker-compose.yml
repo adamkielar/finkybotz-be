@@ -28,15 +28,14 @@ services:
     stdin_open: true
 
   tests:
-    <<: *env_file
     container_name: finkybotz_tests
     command: pytest -v tests -s
     build:
       context: .
       dockerfile: docker/Dockerfile.tests
       network: host
-#    env_file:
-#      - .env.tests
+    env_file:
+      - .env.test.docker
     depends_on:
       - mssql
     profiles:

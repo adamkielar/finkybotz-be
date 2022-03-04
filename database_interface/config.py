@@ -16,6 +16,7 @@ class DbSettings(BaseSettings):
     SQLAlchemyConnectionPoolOverflow: int
     SQLAlchemyConnectionTimeout: int
     Database_Dev_Url: Optional[str] = None
+    Database_Test_Url: Optional[str] = None
     Test_DB_Name: str = "test_database"
 
 
@@ -57,6 +58,10 @@ class DatabaseUrlSettings:
     @staticmethod
     def get_develop_db_connection_string() -> Optional[str]:
         return db_settings.Database_Dev_Url
+
+    @staticmethod
+    def get_test_db_connection_string() -> Optional[str]:
+        return db_settings.Database_Test_Url
 
     def get_db_url(self) -> Optional[str]:
         if db_settings.Environment == "dev":
