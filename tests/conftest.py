@@ -4,13 +4,14 @@ from typing import Generator
 import pytest
 from alembic import command
 from alembic.config import Config
+from httpx import AsyncClient
 from sqlalchemy import create_engine
 from sqlalchemy import text
 from sqlalchemy.orm import Session
-from httpx import AsyncClient
 
 from app.main import app
-from database_interface.config import db_url_settings, db_settings
+from database_interface.config import db_settings
+from database_interface.config import db_url_settings
 from database_interface.mssql.session import MssqlSessionManager
 from tests.sql_templates import CLEAR_DB_SQL
 
@@ -27,11 +28,15 @@ def get_alembic_config():
 
 
 def create_test_db() -> None:
-    engine = create_engine(db_url_settings.get_develop_db_connection_string(), future=True)
+    engine = create_engine(
+        db_url_settings.get_develop_db_connection_string(), future=True
+    )
 
     with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
         connection.execute(text(f"DROP DATABASE IF EXISTS {db_settings.Test_DB_Name};"))
-        connection.execute(text(f"CREATE DATABASE {db_settings.Test_DB_Name} COLLATE Polish_CI_AI;"))
+        connection.execute(
+            text(f"CREATE DATABASE {db_settings.Test_DB_Name} COLLATE Polish_CI_AI;")
+        )
 
 
 def configure_database() -> None:

@@ -1,4 +1,4 @@
-files: ^app/|^database_interface/
+files: ^app/|^database_interface/|^tests/
 default_stages: [commit]
 
 repos:
