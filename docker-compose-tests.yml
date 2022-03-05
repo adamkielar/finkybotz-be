@@ -3,7 +3,7 @@ version: "3.7"
 # x-extension fields
 x-env_file: &env_file
   env_file:
-    - ./.env.test.docker
+    - ./.env.dev.docker
 
 services:
   tests:

@@ -9,13 +9,11 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-  TEST_IMAGE_NAME: ghcr.io/adamkielar/finkybotz-be/finkybotz-tests::latest
   SA_PW: MSSQLpassword1
 
 jobs:
   test:
-    name: Run tests
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,7 +26,7 @@ jobs:
       - name: Install SQL Server
         shell: bash
         run: |
-          docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=MSSQLpassword1" -e "MSSQL_PID=Developer" -e "MSSQL_COLLATION=Polish_CI_AI" -p 1433:1433 --name sqlserver -d mcr.microsoft.com/mssql/server:2019-latest
+          docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=${{ env.SA_PW }}" -e "MSSQL_PID=Developer" -e "MSSQL_COLLATION=Polish_CI_AI" -p 1433:1433 --name sqlserver -d mcr.microsoft.com/mssql/server:2019-latest
       - name: Check docker
         shell: bash
         run: |
@@ -40,8 +38,8 @@ jobs:
           -t finkybotz-tests \
           "."
       - name: Setup SQL Server
-        run: docker exec sqlserver bash -c "/opt/mssql-tools/bin/sqlcmd -S 127.0.0.1,1433 -U sa -P MSSQLpassword1 -Q 'CREATE DATABASE test_database COLLATE Polish_CI_AI'"
-      - name: Run Container
+        run: docker exec sqlserver bash -c "/opt/mssql-tools/bin/sqlcmd -S 127.0.0.1,1433 -U sa -P ${{ env.SA_PW }} -Q 'CREATE DATABASE test_database COLLATE Polish_CI_AI'"
+      - name: Run tests
         run: |
           docker run \
           --name finkybotz-tests \

@@ -14,6 +14,3 @@ COPY app/requirements/dev.txt /src/dev_app.txt
 RUN pip install --no-cache-dir --upgrade -r /src/dev_app.txt
 
 COPY . /src
-
-RUN chmod 755 load_env.sh
-# CMD export Database=Test && echo $Database && pytest
