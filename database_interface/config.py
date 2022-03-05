@@ -66,6 +66,8 @@ class DatabaseUrlSettings:
     def get_db_url(self) -> Optional[str]:
         if db_settings.Environment == "dev":
             return self.get_develop_db_connection_string()
+        if db_settings.Environment == "tst":
+            return self.get_test_db_connection_string()
         return URL.create(
             "mssql+pyodbc",
             query={"odbc_connect": self.get_production_db_connection_string()},

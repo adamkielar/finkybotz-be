@@ -17,7 +17,7 @@ from tests.sql_templates import CLEAR_DB_SQL
 
 APP_PATH = pathlib.Path(__file__).resolve().parents[1]
 
-MIGRATIONS_PATH = str(APP_PATH / "database_interface/migrations")
+MIGRATIONS_PATH = str("/src/database_interface/migrations")
 
 
 def get_alembic_config():
@@ -29,7 +29,7 @@ def get_alembic_config():
 
 def create_test_db() -> None:
     engine = create_engine(
-        db_url_settings.get_test_db_connection_string(), future=True
+        db_url_settings.get_db_url(), future=True
     )
 
     with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
@@ -41,6 +41,8 @@ def create_test_db() -> None:
 
 def configure_database() -> None:
     alembic_config = get_alembic_config()
+    print(alembic_config.get_main_option("script_location"))
+    print(alembic_config.get_main_option("sqlalchemy.url"))
     command.upgrade(alembic_config, "head")
 
 

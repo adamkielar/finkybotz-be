@@ -1,5 +1,4 @@
 FROM python:3.10-slim-buster
-LABEL org.opencontainers.image.source https://github.com/adamkielar/finkybotz-be
 
 WORKDIR /src
 
@@ -16,6 +15,5 @@ RUN pip install --no-cache-dir --upgrade -r /src/dev_app.txt
 
 COPY . /src
 
-RUN chmod 755 ./load_env.sh
-
-CMD pytest -v -s tests
+RUN chmod 755 load_env.sh
+# CMD export Database=Test && echo $Database && pytest

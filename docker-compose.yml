@@ -27,22 +27,6 @@ services:
     tty: true
     stdin_open: true
 
-  tests:
-    container_name: finkybotz_tests
-    command: pytest -v tests -s
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.tests
-      network: host
-    env_file:
-      - .env.test.docker
-    depends_on:
-      - mssql
-    profiles:
-      - tests
-    volumes:
-      - .:/src
-
   mssql:
     image: "mcr.microsoft.com/mssql/server:2019-latest"
     <<: *env_file

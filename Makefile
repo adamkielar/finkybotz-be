@@ -4,7 +4,7 @@ INSTALL_DEPS = app
 .PHONY: tests
 
 tests:
-	@docker-compose run --rm tests
+	@docker-compose -f "docker-compose-tests.yml" run --rm tests
 
 update-deps-dev:
 	$(foreach app,$(UPDATE_DEPS),pip-compile --upgrade --rebuild --generate-hashes --allow-unsafe --no-emit-index-url $(app)/requirements/dev.in --output-file $(app)/requirements/dev.txt;)
