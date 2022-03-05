@@ -18,7 +18,7 @@ from tests.sql_templates import CLEAR_DB_SQL
 
 APP_PATH = pathlib.Path(__file__).resolve().parents[1]
 
-MIGRATIONS_PATH = str("/src/database_interface/migrations")
+MIGRATIONS_PATH = str(APP_PATH / "database_interface/migrations")
 
 
 def get_alembic_config():
