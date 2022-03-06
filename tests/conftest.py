@@ -40,8 +40,6 @@ def create_test_db() -> None:
 
 def configure_database() -> None:
     alembic_config = get_alembic_config()
-    print(alembic_config.get_main_option("script_location"))
-    print(alembic_config.get_main_option("sqlalchemy.url"))
     command.upgrade(alembic_config, "head")
 
 
