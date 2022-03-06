@@ -38,7 +38,7 @@ jobs:
       - name: Build test image
         run: |
           docker build \
-          --cached-from ${{ env.TEST_IMAGE_NAME }}:latest \
+          --cache-from ${{ env.TEST_IMAGE_NAME }}:latest \
           -t ${{ env.TEST_IMAGE_NAME }}:latest \
           -f docker/Dockerfile.tests \
           "."
