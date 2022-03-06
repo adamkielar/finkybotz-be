@@ -16,7 +16,7 @@ services:
       args:
         REQUIREMENTS: ${REQUIREMENTS:-dev}
     ports:
-      - 8000:8000
+      - "8000:8000"
     depends_on:
       - mssql
     restart: always
@@ -31,7 +31,7 @@ services:
     image: "mcr.microsoft.com/mssql/server:2019-latest"
     <<: *env_file
     ports:
-      - 1433:1433
+      - "1433:1433"
     volumes:
       - mssql-data:/var/opt/mssql
 
