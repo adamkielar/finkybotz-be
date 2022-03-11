@@ -12,7 +12,7 @@ services:
     command: uvicorn --host=0.0.0.0 --port 8000 app.main:app --reload
     build:
       context: .
-      dockerfile: docker/Dockerfile
+      dockerfile: docker/Dockerfile.api
       args:
         REQUIREMENTS: ${REQUIREMENTS:-dev}
     ports:
@@ -26,23 +26,6 @@ services:
       - ./database_interface/alembic.ini:/src/alembic.ini
     tty: true
     stdin_open: true
-
-  tests:
-    <<: *env_file
-    container_name: finkybotz_tests
-    command: pytest -v tests -s
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.tests
-      network: host
-#    env_file:
-#      - .env.tests
-    depends_on:
-      - mssql
-    profiles:
-      - tests
-    volumes:
-      - .:/src
 
   mssql:
     image: "mcr.microsoft.com/mssql/server:2019-latest"

@@ -1,0 +1,29 @@
+version: "3.7"
+
+# x-extension fields
+x-env_file: &env_file
+  env_file:
+    - ./.env.dev.docker
+
+services:
+  tests:
+    <<: *env_file
+    container_name: finkybotz_tests
+    command: pytest -v -s tests
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.tests
+    depends_on:
+      - mssql
+    profiles:
+      - tests
+    volumes:
+      - .:/src
+    tty: true
+    stdin_open: true
+
+  mssql:
+    <<: *env_file
+    image: "mcr.microsoft.com/mssql/server:2019-latest"
+    ports:
+      - 1433:1433

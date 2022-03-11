@@ -1,0 +1,82 @@
+name: Build and test
+
+on:
+  push:
+    branches: []
+
+env:
+  REGISTRY: ghcr.io
+  SA_PW: MSSQLpassword1
+  TEST_IMAGE_NAME: ghcr.io/adamkielar/finkybotz-be/finkybotz-tests
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.4.0
+
+      - name: Log in to GitHub Packages
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${REGISTRY} -u ${{ github.actor }} --password-stdin
+
+      - name: Install SQL Server
+        shell: bash
+        run: |
+          docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=${{ env.SA_PW }}" -e "MSSQL_PID=Developer" -e "MSSQL_COLLATION=Polish_CI_AI" -p 1433:1433 --name sqlserver -d mcr.microsoft.com/mssql/server:2019-latest
+
+      - name: Pull Test Image
+        run: |
+          docker pull ${{ env.TEST_IMAGE_NAME }}:latest || true
+
+      - name: Build Test Image
+        run: |
+          docker build \
+          --cache-from ${{ env.TEST_IMAGE_NAME }}:latest \
+          -t ${{ env.TEST_IMAGE_NAME }}:latest \
+          -f docker/Dockerfile.tests \
+          "."
+
+      - name: Setup SQL Server
+        run: docker exec sqlserver bash -c "/opt/mssql-tools/bin/sqlcmd -S 127.0.0.1,1433 -U sa -P ${{ env.SA_PW }} -Q 'CREATE DATABASE test_database COLLATE Polish_CI_AI'"
+
+      - name: Run Container
+        run: |
+          docker run \
+          -d \
+          --name finkybotz-tests \
+          --env-file=.env.test.docker \
+          ${{ env.TEST_IMAGE_NAME }}:latest
+
+      - name: Run Pytest
+        run: |
+          docker exec finkybotz-tests pytest -vv -s --junitxml pytest.xml > pytest.xml 2>&1
+
+      - name: Upload Unit Test Results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: Unit Test Results
+          path: pytest.xml
+
+      - name: Run bandit
+        run: |
+          docker exec finkybotz-tests bandit -r .
+
+      - name: Run safety
+        run: |
+          docker exec finkybotz-tests safety check -i 42194
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ env.TEST_IMAGE_NAME }}:latest'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Push test image
+        run: |
+          docker push ${{ env.TEST_IMAGE_NAME }}:latest

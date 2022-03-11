@@ -9,5 +9,7 @@ class TestHealthCheck:
     @pytest.mark.asyncio
     async def test_db(self, client, db_session):
         assert db_session.execute(text("SELECT 1")).scalar()
-        response = await client.get(DATABASE_HEALTH_PREFIX,)
+        response = await client.get(
+            DATABASE_HEALTH_PREFIX,
+        )
         assert response.status_code == status.HTTP_200_OK
