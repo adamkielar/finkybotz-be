@@ -128,5 +128,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-VScode
+# VScode
 .idea/
+
+# Pytest
+pytest.xml

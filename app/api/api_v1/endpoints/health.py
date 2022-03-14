@@ -6,9 +6,7 @@ from fastapi import Depends
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from app.api.api_v1.prefixes import BINANCE_HEALTH_PREFIX
 from app.api.api_v1.prefixes import DATABASE_HEALTH_PREFIX
-from app.binance.connector import BinanceHealthEndpoint
 from database_interface.mssql.session import MssqlSessionManager
 
 router = APIRouter()
@@ -25,9 +23,3 @@ async def mssql_db_health(
 ) -> Dict[str, str]:
     db_version = db_session.execute(text("SELECT @@version")).scalar()
     return {"mssql version": db_version}
-
-
-@router.get(BINANCE_HEALTH_PREFIX)
-async def binance_health():
-    status, response = BinanceHealthEndpoint().get()
-    return {"status": status, "response": response}
